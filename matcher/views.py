@@ -35,4 +35,4 @@ def get_candidates_by_skills(request):
 
     response_list = list(good_candidates)
 
-    return HttpResponse(json.dumps(good_candidates), content_type="application/json")
+    return HttpResponse(json.dumps(response_list), content_type="application/json")
