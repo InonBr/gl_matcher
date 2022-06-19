@@ -14,7 +14,7 @@ class Candidate(models.Model):
     skills = models.ManyToManyField(Skill)
 
     def __str__(self):
-        return {"name": self.name, "title": self.title}
+        return f"name: {self.name}, title: {self.title}"
 
 
 class Job(models.Model):
