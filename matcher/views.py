@@ -9,7 +9,7 @@ from django.db.models import Count
 def get_candidates_by_job_id(request, job_id):
     try:
         job = Job.objects.get(id=job_id)
-        candidates = Candidate.objects.filter(title__contains=job.title)
+        candidates = Candidate.objects.filter(title__icontains=job.title)
 
         serializer = CandidateSerializer(candidates, many=True)
         return JsonResponse(serializer.data, safe=False)
