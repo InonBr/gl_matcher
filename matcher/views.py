@@ -6,7 +6,7 @@ from django.core.exceptions import BadRequest
 from django.db.models import Count
 
 
-def get_candidates(request, job_id):
+def get_candidates_by_job_id(request, job_id):
     try:
         job = Job.objects.get(id=job_id)
         candidates = Candidate.objects.filter(title__contains=job.title)
@@ -18,21 +18,18 @@ def get_candidates(request, job_id):
         raise BadRequest("Job matching query does not exist")
 
 
-def get_candidates_by_skills(request):
-    params = request.GET.get("skills")
+def get_candidates_by_skills(request, job_id):
+    skills = Skill.objects.filter(job=job_id)
 
-    if params == None:
-        raise BadRequest("Invalid request.")
-
-    params_list = params.replace(" ", "").split(",")
-
-    good_candidates = (
+    candidates = (
         Candidate.objects.values()
-        .filter(skills__name__in=params_list)
+        .filter(skills__id__in=skills)
         .annotate(matching_skill_count=Count("id"))
         .order_by("-matching_skill_count")
     )
 
-    response_list = list(good_candidates)
+    good_candidates_list = list(candidates)
 
-    return HttpResponse(json.dumps(response_list), content_type="application/json")
+    return HttpResponse(
+        json.dumps(good_candidates_list), content_type="application/json"
+    )
