@@ -6,16 +6,16 @@ from django.core.exceptions import BadRequest
 from django.db.models import Count
 
 
-def get_candidates(request):
-    params = request.GET.get("title")
-    candidates = (
-        Candidate.objects.all()
-        if params == None
-        else Candidate.objects.filter(title__contains=params)
-    )
+def get_candidates(request, job_id):
+    try:
+        job = Job.objects.get(id=job_id)
+        candidates = Candidate.objects.filter(title__contains=job.title)
 
-    serializer = CandidateSerializer(candidates, many=True)
-    return JsonResponse(serializer.data, safe=False)
+        serializer = CandidateSerializer(candidates, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    except Job.DoesNotExist:
+        print("Job matching query does not exist")
+        raise BadRequest("Job matching query does not exist")
 
 
 def get_candidates_by_skills(request):
